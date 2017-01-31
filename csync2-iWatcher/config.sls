@@ -1,4 +1,3 @@
-{% from "csync2-iWatcher/map.jinja" import iWatcher, csync2 with context %}
 
 iWatcher-config:
   file.managed:
@@ -8,7 +7,7 @@ iWatcher-config:
 
 csync2-config:
   file.managed:
-    - name: /etc/csync2_{{ iWatcher.flavour }}.cfg
+    - name: /etc/csync2_{{ pillar['iWatcher']['flavour'] }}.cfg
     - source: salt://csync2-iWatcher/templates/csync2.jinja
     - template: jinja
 
@@ -20,6 +19,6 @@ append-csync2-service:
 
 csync2-key:
   file.managed:
-    - name: {{ csync2.key_loc }} 
+    - name: {{ pillar['csync2']['key_loc'] }} 
     - source: salt://csync2-iWatcher/csync2.key
     - mode: 600

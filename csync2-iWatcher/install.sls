@@ -1,8 +1,6 @@
-{% from "csync2-iWatcher/map.jinja" import iWatcher with context %}
-
 iWatcher-executable-file:
   file.managed:
-    - name: {{ iWatcher.executable }}
+    - name: {{ pillar['iWatcher']['executable'] }}
     - source: salt://csync2-iWatcher/templates/iWatcher.jinja
     - template: jinja
     - mode: 755

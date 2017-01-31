@@ -1,7 +1,7 @@
-{% from 'csync2-iWatcher/map.jinja' import iWatcher with context %}#!/bin/bash
+#!/bin/bash
 
 CONF_FILE=/etc/iWatcher.conf
-CONF_FLAVOUR={{ iWatcher.flavour }}
+CONF_FLAVOUR={{ pillar['iWatcher']['flavour'] }}
 RETVAL=0
 
 declare logname

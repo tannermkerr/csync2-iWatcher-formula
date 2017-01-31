@@ -1,10 +1,8 @@
-{% from 'csync2-iWatcher/map.jinja' import iWatcher with context %}
-
 [Unit]
 Description=iWatcher
 
 [Service]
-ExecStart={{ iWatcher.executable }}
+ExecStart={{ pillar['iWatcher']['executable'] }}
 
 [Install]
 WantedBy=multi-user.target

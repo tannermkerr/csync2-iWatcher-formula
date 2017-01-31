@@ -5,16 +5,14 @@
 # This file is managed by Salt.
 # Any changes will be overwritten.
 
-{% from 'csync2-iWatcher/map.jinja' import csync2 with context %}
-
 nossl * *;
-group {{ csync2.group_name }}
+group {{ pillar['csync2']['group_name'] }}
 {
-    {% for host in csync2.hosts %}
+    {% for host in pillar['csync2']['hosts'] %}
     host {{ host }};
     {% endfor %}
-    {% for folder in csync2.folders %}
+    {% for folder in pillar['csync2']['folders'] %}
     include {{folder}};
     {% endfor %}
-    key {{ csync2.key_loc }};
+    key {{ pillar['csync2']['key_loc'] }};
 }
