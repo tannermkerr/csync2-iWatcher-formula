@@ -14,4 +14,4 @@ csync2:
     - host2
   folders:
     - /opt 
-
+  key_loc: /etc/csync2.key
