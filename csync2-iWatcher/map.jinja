@@ -7,7 +7,7 @@
 {% set csync2 = salt['pillar.get']('csync2', {
   'key_loc': '/etc/csync2.key',
   'group_name': 'opt',
-  'hosts': ['master', 'minion'],
+  'hosts': ['minion1', 'minion2'],
   'folders': ['/opt'],
 }) %}
 
