@@ -1,5 +1,5 @@
 # csync2-iWatcher-formula
-salt-formula for csync2 with iWatcher
+salt-formula for csync2 with iWatcher for Debian Jessie
 
 ## Generate csync2 key on master before stating
 csync2 -k csync2-iWatcher/csync2.key
