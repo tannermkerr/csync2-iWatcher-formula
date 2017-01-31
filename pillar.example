@@ -1,0 +1,17 @@
+# flavour will have to match the suffix of the csync2 config file (in this case csync2_opt.cfg)
+iWatcher:
+  flavour: opt
+  log: /var/log/iWatcher.log
+  executable: /usr/local/bin/iWatcher.sh
+
+
+# 'hosts' must match what is given by 'hostname' command
+# 'folders' is a list of folders to csync
+csync2:
+  group_name: opt_dir
+  hosts:
+    - host1 
+    - host2
+  folders:
+    - /opt 
+

@@ -1,0 +1,9 @@
+{% from 'csync2-iWatcher/map.jinja' import iWatcher, csync2 with context %}
+
+[global]
+log={{ iWatcher.log }}
+
+[watch_dirs]
+{% for folder in csync2.folders %}
+{{ folder }}=close_write,delete
+{% endfor %}

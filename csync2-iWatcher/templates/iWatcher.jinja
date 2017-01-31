@@ -1,0 +1,107 @@
+{% from 'csync2-iWatcher/map.jinja' import iWatcher with context %}#!/bin/bash
+
+CONF_FILE=/etc/iWatcher.conf
+CONF_FLAVOUR={{ iWatcher.flavour }}
+RETVAL=0
+
+declare logname
+declare -A watch_dirs
+declare -A watch_flags
+
+###
+### Load config from $CONF_FILE
+###
+function loadConf(){
+
+    local WDIR_INDEX=0
+    local CUR_SECTION=""
+
+    while read line; do
+        if [[ $line =~ ^"["(.+)"]"$ ]]; then
+            c_label=$(echo ${BASH_REMATCH[1]}|awk '{print tolower($0)}')
+            case "$c_label" in
+                "watch_dirs")
+                    CUR_SECTION="watch_dirs"
+                ;;
+                "global")
+                    CUR_SECTION="global"
+                ;;
+                *)
+                    echo "Invalid config at $CONF_FILE !"
+                    exit 1
+                ;;
+            esac
+        elif [[ $line =~ ^(.*)"="(.*) ]]; then
+            local sec_key="${BASH_REMATCH[1]}"
+            local sec_val="${BASH_REMATCH[2]}"
+
+            case "$CUR_SECTION" in
+                "watch_dirs")
+                    # first, ensure this is a valid directory
+                    if [ -d "$sec_key" ]; then
+                        echo "Adding folder $sec_key">>$logname
+                        watch_dirs["$WDIR_INDEX"]="$sec_key"
+                        watch_flags["$WDIR_INDEX"]="$sec_val"
+                        ((WDIR_INDEX++))
+                    else
+                        echo "Skipping $sec_key as it is not a valid directory."
+                    fi
+                ;;
+                "global")
+                    case $sec_key in
+                        "log")
+                            logname=$sec_val
+                        ;;
+                        *)
+                            echo "Config error: ignoring $sec_key"
+                        ;;
+                    esac
+                ;;
+                *)
+                    echo "Config section [$CUR_SECTION] not implemented!"
+                ;;
+            esac
+        fi
+    done < $CONF_FILE
+}
+
+
+###
+### usage: watchD <dir> <flags>
+###
+function watchD(){
+    # Compile inotify flags
+        local wFlags=""
+
+        IFS=',' read -ra FLAGS <<< "$2";
+
+    for i in "${FLAGS[@]}"; do
+        wFlags="-e $i $wFlags"
+    done;
+
+    #log
+    date >> $logname
+    echo "inotifywait -r -m $wFlags $1" >> $logname
+
+    inotifywait -r -m $wFlags $1  |
+        while read dir ev file; do
+            /usr/sbin/csync2 -C $CONF_FLAVOUR -x -v >> $logname 2>&1
+            echo "$file --> $ev" >> $logname
+        done
+}
+
+# Load configuration
+loadConf
+
+
+FLAG_INDEX=0
+
+for wdir in "${watch_dirs[@]}"; do
+    echo "Initiating watch on $wdir with ${watch_flags[$FLAG_INDEX]} flags." >> $logname
+    watchD $wdir ${watch_flags[$FLAG_INDEX]} &
+    ((FLAG_INDEX++))
+done
+
+#keep alive
+wait
+

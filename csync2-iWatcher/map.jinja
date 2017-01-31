@@ -1,0 +1,14 @@
+{% set iWatcher = salt['pillar.get']('iWatcher', {
+  'flavour': 'opt',
+  'log': '/var/log/iWatcher.log',
+  'executable': '/usr/local/bin/iWatcher.sh',
+}) %}
+ 
+{% set csync2 = salt['pillar.get']('csync2', {
+  'key_loc': '/etc/csync2.key',
+  'group_name': 'opt',
+  'hosts': ['master', 'minion'],
+  'folders': ['/opt'],
+}) %}
+
+
